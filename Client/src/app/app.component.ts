@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderNavComponent } from './components/header-nav/header-nav.component';
+import { LandingPageComponent } from './components/pages/landing-page/landing-page.component';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,18 @@ import { HeaderNavComponent } from './components/header-nav/header-nav.component
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
-  title = 'Client';
+export class AppComponent implements OnInit {
+  showNavBar = true;
+
+  constructor() {}
+
+  ngOnInit(): void {}
+
+  toggleNavBar(component: any) {
+    if (component instanceof LandingPageComponent) {
+      this.showNavBar = false;
+    } else {
+      this.showNavBar = true;
+    }
+  }
 }
