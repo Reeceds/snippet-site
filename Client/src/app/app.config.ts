@@ -6,7 +6,8 @@ import {
   GoogleLoginProvider,
   SocialAuthServiceConfig,
 } from '@abacritt/angularx-social-login';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { jwtInterceptor } from './interceptors/jwt.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,6 +33,6 @@ export const appConfig: ApplicationConfig = {
         },
       } as SocialAuthServiceConfig,
     },
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([jwtInterceptor])),
   ],
 };

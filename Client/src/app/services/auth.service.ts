@@ -7,7 +7,7 @@ import { GoogleCredentials } from '../models/googleCredentials';
   providedIn: 'root',
 })
 export class AuthService {
-  private url = 'http://localhost:5069/api/';
+  private url = 'http://localhost:5069/api/authentication/';
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +20,7 @@ export class AuthService {
     const googleCredentials = JSON.stringify(credentials);
 
     return this.http.post<GoogleCredentials>(
-      this.url + 'google-login',
+      `${this.url}google-login`,
       googleCredentials,
       httpOptions
     );

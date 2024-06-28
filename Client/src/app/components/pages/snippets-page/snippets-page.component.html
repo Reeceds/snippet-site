@@ -1,0 +1,11 @@
+<div class="container">
+  <p>snippets-page works!</p>
+  @for (snippet of snippets; track $index) {
+  <div>
+    <p>{{ snippet.title }}</p>
+    <p>{{ snippet.content }}</p>
+    <p>{{ snippet.creator }}</p>
+    <p>{{ snippet.dateCreated | date : "dd-MM-yyyy" }}</p>
+  </div>
+  }
+</div>

@@ -7,6 +7,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { AuthService } from '../../services/auth.service';
 import { GoogleCredentials } from '../../models/googleCredentials';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-google-login',
@@ -17,10 +18,12 @@ import { GoogleCredentials } from '../../models/googleCredentials';
 })
 export class GoogleLoginComponent implements OnInit {
   public faGoogle = faGoogle;
+  isUserAuthenticated: boolean = false;
 
   constructor(
     private socialAuthService: SocialAuthService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -46,8 +49,10 @@ export class GoogleLoginComponent implements OnInit {
   handleCredentialResponse(credentials: GoogleCredentials) {
     this.authService.googleLoginApi(credentials).subscribe({
       next: (res) => {
-        if (res.token) {
-          localStorage.setItem('reeceToken', res.token);
+        if (res.isAuthSuccessful === true && res.token) {
+          this.isUserAuthenticated = true;
+          localStorage.setItem('jwt', res.token.toString());
+          this.router.navigate(['/snippets']);
         }
       },
       error: (err) => {
