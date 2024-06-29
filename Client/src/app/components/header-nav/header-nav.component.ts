@@ -18,7 +18,11 @@ export class HeaderNavComponent implements OnInit {
   tablesSizePx: number = 992;
   tabletSize: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private _ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
     this.TabletSizeOnPageLoad();
@@ -27,8 +31,11 @@ export class HeaderNavComponent implements OnInit {
   logout() {
     this.authService.logout().subscribe({
       next: () => {
-        this.router.navigate(['/']);
-        window.location.reload();
+        this._ngZone.run(() => {
+          this.router.navigate(['/']).then(() => {
+            window.location.reload();
+          });
+        });
       },
       error: (err) => {
         console.log(err);
