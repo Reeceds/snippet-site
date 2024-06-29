@@ -2,6 +2,7 @@ import { Component, HostListener, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header-nav',
@@ -17,16 +18,22 @@ export class HeaderNavComponent implements OnInit {
   tablesSizePx: number = 992;
   tabletSize: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.TabletSizeOnPageLoad();
   }
 
   logout() {
-    localStorage.removeItem('jwt');
-    this.router.navigate(['/']);
-    window.location.reload();
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+        window.location.reload();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 
   @HostListener('window:resize', ['$event'])

@@ -40,7 +40,10 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
+}).AddCookie(x => {
+    x.Cookie.Name = "jwtToken";
+})
+.AddJwtBearer(o =>
 {
     o.RequireHttpsMetadata = false;
     o.SaveToken = true;
@@ -50,6 +53,14 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidateIssuer = false,
         ValidateAudience = false
+    };
+    o.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            context.Token = context.Request.Cookies["jwtToken"];
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -64,6 +75,7 @@ var app = builder.Build();
 // ! Add CORS for the url of the front end (i.e the local server that Angular is running on)
 app.UseCors(builder => builder
 .AllowAnyHeader()
+.AllowCredentials() // ! Add .AllowCredentials() when using passing jwt on httponly cookkie
 .AllowAnyMethod()
 .WithOrigins("http://localhost:4200"));
 

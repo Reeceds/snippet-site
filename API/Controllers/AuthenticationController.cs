@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.OpenApi.Any;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API;
 
@@ -45,9 +46,11 @@ public class AuthenticationController : BaseApiController
 
         if (user == null) return BadRequest("Invalid External Authentication.");
 
-        var token = this.GenerateToken(user);
+        GenerateToken(user);
 
-        return Ok(new GoogleAuthResponseDto { IsAuthSuccessful = true, Token = token, Provider = googleAuth.Provider });
+        // new GoogleAuthResponseDto { IsAuthSuccessful = true, Token = token, Provider = googleAuth.Provider };
+
+        return Ok(new GoogleAuthResponseDto { IsAuthSuccessful = true, Provider = googleAuth.Provider });
     }
 
     protected async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(GoogleAuthDto googleToken)
@@ -83,6 +86,24 @@ public class AuthenticationController : BaseApiController
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var encrypterToken = tokenHandler.WriteToken(token);
 
+        HttpContext.Response.Cookies.Append("jwtToken", encrypterToken,
+            new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddHours(1),
+                HttpOnly = true,
+                Secure = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.None
+            }
+        );
+
         return encrypterToken;
+    }
+
+    [Authorize]
+    [HttpGet("logout")]
+    public void Logout()
+    {
+        HttpContext.Response.Cookies.Delete("jwtToken");
     }
 }

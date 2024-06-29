@@ -10,28 +10,9 @@ import { Router } from '@angular/router';
 export class SnippetsService {
   private url = 'http://localhost:5069/api/';
 
-  constructor(private http: HttpClient, private router: Router) {}
-
-  // getSnippetsList(): Observable<Snippet[]> | undefined {
-  //   var token = localStorage.getItem('jwt');
-
-  //   if (!token) this.router.navigate(['/']);
-
-  //   var options = new HttpHeaders().set(
-  //     'Authorization',
-  //     `Bearer ${localStorage.getItem('jwt')}`
-  //   );
-
-  //   return this.http.get<Snippet[]>(`${this.url}snippets`, {
-  //     headers: options,
-  //   });
-  // }
+  constructor(private http: HttpClient) {}
 
   getSnippetsList(): Observable<Snippet[]> | undefined {
-    var token = localStorage.getItem('jwt');
-
-    if (!token) this.router.navigate(['/']);
-
     return this.http.get<Snippet[]>(`${this.url}snippets`);
   }
 }

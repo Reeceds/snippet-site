@@ -33,7 +33,6 @@ export class GoogleLoginComponent implements OnInit {
   googleLogin() {
     this.socialAuthService.authState.subscribe({
       next: (res) => {
-        console.log(res);
         const googleCreds: GoogleCredentials = {
           idToken: res.idToken,
           provider: res.provider,
@@ -49,9 +48,8 @@ export class GoogleLoginComponent implements OnInit {
   handleCredentialResponse(credentials: GoogleCredentials) {
     this.authService.googleLoginApi(credentials).subscribe({
       next: (res) => {
-        if (res.isAuthSuccessful === true && res.token) {
+        if (res.isAuthSuccessful === true) {
           this.isUserAuthenticated = true;
-          localStorage.setItem('jwt', res.token.toString());
           this.router.navigate(['/snippets']);
         }
       },

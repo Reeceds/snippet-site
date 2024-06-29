@@ -16,6 +16,7 @@ export class AuthService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
+      withCredentials: true,
     };
     const googleCredentials = JSON.stringify(credentials);
 
@@ -24,5 +25,9 @@ export class AuthService {
       googleCredentials,
       httpOptions
     );
+  }
+
+  logout() {
+    return this.http.get(`${this.url}logout`);
   }
 }
