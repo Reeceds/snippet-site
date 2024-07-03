@@ -8,6 +8,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { AuthService } from '../../services/auth.service';
 import { GoogleCredentials } from '../../models/googleCredentials';
 import { Router } from '@angular/router';
+import { CurrentUser } from '../../models/currentUser';
 
 @Component({
   selector: 'app-google-login',
@@ -19,6 +20,7 @@ import { Router } from '@angular/router';
 export class GoogleLoginComponent implements OnInit {
   public faGoogle = faGoogle;
   isUserAuthenticated: boolean = false;
+  user: CurrentUser = {};
 
   constructor(
     private socialAuthService: SocialAuthService,
@@ -33,9 +35,14 @@ export class GoogleLoginComponent implements OnInit {
   googleLogin() {
     this.socialAuthService.authState.subscribe({
       next: (res) => {
+        console.log(res);
         const googleCreds: GoogleCredentials = {
           idToken: res.idToken,
           provider: res.provider,
+        };
+        this.user = {
+          name: res.name,
+          email: res.email,
         };
         this.handleCredentialResponse(googleCreds);
       },
@@ -48,9 +55,20 @@ export class GoogleLoginComponent implements OnInit {
   handleCredentialResponse(credentials: GoogleCredentials) {
     this.authService.googleLoginApi(credentials).subscribe({
       next: (res) => {
+        console.log('test', res);
         if (res.isAuthSuccessful === true) {
           this.isUserAuthenticated = true;
-          this.router.navigate(['/snippets']);
+
+          if (res.displayName !== null) {
+            this.user = {
+              ...this.user,
+              displayName: res.displayName,
+            };
+            this.authService.setCurrentUser(this.user);
+            this.router.navigate(['/snippets']);
+          } else {
+            this.router.navigate(['/profile']);
+          }
         }
       },
       error: (err) => {

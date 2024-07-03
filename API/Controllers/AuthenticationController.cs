@@ -50,7 +50,7 @@ public class AuthenticationController : BaseApiController
 
         // new GoogleAuthResponseDto { IsAuthSuccessful = true, Token = token, Provider = googleAuth.Provider };
 
-        return Ok(new GoogleAuthResponseDto { IsAuthSuccessful = true, Provider = googleAuth.Provider });
+        return Ok(new GoogleAuthResponseDto { IsAuthSuccessful = true, Provider = googleAuth.Provider, DisplayName = user.DisplayName });
     }
 
     protected async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(GoogleAuthDto googleToken)

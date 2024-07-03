@@ -1,13 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { GoogleCredentials } from '../models/googleCredentials';
+import { CurrentUser } from '../models/currentUser';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private url = 'http://localhost:5069/api/authentication/';
+  currentUserSource = new BehaviorSubject({});
+  currentUser$ = this.currentUserSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -25,6 +28,10 @@ export class AuthService {
       googleCredentials,
       httpOptions
     );
+  }
+
+  setCurrentUser(userDetails: CurrentUser) {
+    this.currentUserSource.next(userDetails);
   }
 
   logout() {

@@ -1,0 +1,10 @@
+.profile-nav {
+  display: flex;
+  flex-direction: column;
+  background-color: lightgray;
+  align-items: flex-end;
+
+  &_item {
+    padding-bottom: 10px;
+  }
+}
