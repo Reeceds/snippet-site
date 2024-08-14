@@ -5,31 +5,31 @@
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class CantRemember : Migration
+    public partial class fuliterAndCategoryModelUpdate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "DisplayName",
-                table: "AspNetUsers",
-                type: "TEXT",
+            migrationBuilder.AlterColumn<int>(
+                name: "CategoryId",
+                table: "Filters",
+                type: "INTEGER",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "TEXT");
+                oldType: "TEXT",
+                oldNullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "DisplayName",
-                table: "AspNetUsers",
+                name: "CategoryId",
+                table: "Filters",
                 type: "TEXT",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "TEXT",
+                nullable: true,
+                oldClrType: typeof(int),
+                oldType: "INTEGER",
                 oldNullable: true);
         }
     }

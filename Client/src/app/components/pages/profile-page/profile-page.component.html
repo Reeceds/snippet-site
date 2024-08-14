@@ -1,8 +1,15 @@
+<div>
+  <div class="container">
+    <h1>Account</h1>
+  </div>
+</div>
+
 <div class="container">
   <p>profile-page works!</p>
 
   <div class="profile-components_container">
     <app-profile-nav />
-    <router-outlet />
+    <app-profile-account [hidden]="myOutlet.isActivated" />
+    <router-outlet #myOutlet="outlet" />
   </div>
 </div>

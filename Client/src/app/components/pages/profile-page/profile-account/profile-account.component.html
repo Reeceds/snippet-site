@@ -1,1 +1,32 @@
-<p>profile-account works!</p>
+<form
+  class="profile-account_form"
+  [formGroup]="profileForm"
+  (ngSubmit)="submitForm()"
+>
+  <label for="email">Email:</label>
+  <input id="email" type="text" value="{{ currentUser.email }}" disabled />
+
+  <label for="username">Display name:</label>
+  <input
+    type="text"
+    id="username"
+    placeholder="Enter display name"
+    formControlName="displayName"
+    maxlength="10"
+    required
+    value="{{
+      currentUser.displayName === null ? '' : currentUser.displayName
+    }}"
+    [class.futureClassName]="profileForm.get('displayName')?.invalid"
+  />
+  @if (formSubmitted && currentDisplayName === profileForm.value.displayName){
+  <p>Please enter a new display name</p>
+  } @else if (formSubmitted && profileForm.controls.displayName.invalid) {
+  <p>Please enter a display name</p>
+  }
+
+  <!-- <button type="submit"> -->
+  <button type="submit" [disabled]="profileForm.controls.displayName.pristine">
+    Submit
+  </button>
+</form>

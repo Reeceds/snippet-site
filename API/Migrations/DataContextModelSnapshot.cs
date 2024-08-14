@@ -85,6 +85,57 @@ namespace API.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("API.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryName = "Languages"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryName = "Frameworks"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryName = "Libraries"
+                        });
+                });
+
+            modelBuilder.Entity("API.Filter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FilterName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Filters");
+                });
+
             modelBuilder.Entity("API.Snippet", b =>
                 {
                     b.Property<int>("Id")

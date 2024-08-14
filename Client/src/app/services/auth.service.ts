@@ -19,7 +19,6 @@ export class AuthService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
-      withCredentials: true,
     };
     const googleCredentials = JSON.stringify(credentials);
 

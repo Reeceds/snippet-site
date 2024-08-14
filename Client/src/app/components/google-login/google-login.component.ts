@@ -67,7 +67,9 @@ export class GoogleLoginComponent implements OnInit {
             this.authService.setCurrentUser(this.user);
             this.router.navigate(['/snippets']);
           } else {
-            this.router.navigate(['/profile']);
+            this.router.navigate(['/profile/account'], {
+              queryParams: { dname: '0' },
+            });
           }
         }
       },

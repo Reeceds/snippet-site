@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ProfileNavComponent } from './profile-nav/profile-nav.component';
 import { ProfileAccountComponent } from './profile-account/profile-account.component';
 import { ProfileCategoriesComponent } from './profile-categories/profile-categories.component';
@@ -17,7 +17,9 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './profile-page.component.scss',
 })
 export class ProfilePageComponent implements OnInit {
-  constructor() {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.cdr.detectChanges(); // Gets rid of error
+  }
 }

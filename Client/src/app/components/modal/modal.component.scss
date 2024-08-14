@@ -1,0 +1,22 @@
+.modal-component {
+  border: 1px solid lightgray;
+  padding: 20px;
+
+  &_overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.267);
+  }
+
+  &_container {
+    position: fixed !important;
+    top: 40% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background-color: #fff;
+    z-index: 2;
+  }
+}

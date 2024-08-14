@@ -1,1 +1,94 @@
-<p>profile-categories works!</p>
+<h4>Edit filters</h4>
+<button type="button" (click)="openCreateModal()">Add new</button>
+@if (filtersList.length > 0 && !getFiltersError) {
+<ul>
+  @for (filter of filtersList; track filter.id ) {
+  <li [attr.filter-id]="filter.id">
+    <span class="me-3">{{ filter.filterName }}</span>
+    <fa-icon
+      class="fa-sm me-3"
+      [icon]="faPen"
+      (click)="openEditModal(filter.id!)"
+    ></fa-icon
+    ><fa-icon
+      class="fa-sm"
+      [icon]="faTrash"
+      (click)="deleteFilter(filter.id)"
+    ></fa-icon>
+  </li>
+  }
+</ul>
+} @else if (filtersList.length === 0 && !getFiltersError) {
+<div>
+  <p>No filters created.</p>
+</div>
+} @else if (getFiltersError) {
+<div>
+  <p>Filter data currently unavailable.</p>
+</div>
+}
+
+<app-modal *ngIf="isCreateModalOpen" (closeModal)="closeModal()">
+  <form [formGroup]="createFilterForm" (ngSubmit)="createFilterSubmit()">
+    <h5>Add filter</h5>
+    <input
+      type="text"
+      placeholder="Enter filter name"
+      formControlName="filterName"
+      required
+    />
+    @if (formSubmitted &&
+    createFilterForm.get("filterName")?.hasError('required')){
+    <p>Please enter a filter name</p>
+    } @else if (formSubmitted && duplicateFilterError) {
+    <p>A filter with this name already exists</p>
+    }
+    <label for="category">Category</label>
+    <select formControlName="categoryId" id="category" required>
+      <option value="default" disabled>Please select</option>
+      @if (categoriesList.length > 0) { @for (category of categoriesList; track
+      category.id) {
+      <option [attr.cat-id]="category.id" value="{{ category.id }}">
+        {{ category.categoryName }}
+      </option>
+      } }
+    </select>
+    @if (formSubmitted && createFilterForm.controls.categoryId.value ===
+    "default"){
+    <p>Please select a category</p>
+    }
+    <button type="button" (click)="closeModal()">Cancel</button>
+    <button type="submit">Submit</button>
+  </form>
+</app-modal>
+
+<app-modal *ngIf="isEditModalOpen" (closeModal)="closeModal()">
+  <form [formGroup]="editFilterForm" (ngSubmit)="editFilterSubmit()">
+    <h5>Edit filter</h5>
+    <input
+      type="text"
+      placeholder="Enter filter name"
+      formControlName="filterName"
+      required
+    />
+    @if (formSubmitted &&
+    editFilterForm.get("filterName")?.hasError('required')){
+    <p>Please enter a filter name</p>
+    }
+    <label for="category">Category</label>
+    <select formControlName="categoryId" id="category" required>
+      <option value="" disabled>Please select</option>
+      @if (categoriesList.length > 0) { @for (category of categoriesList; track
+      category.id) {
+      <option [attr.cat-id]="category.id" value="{{ category.id }}">
+        {{ category.categoryName }}
+      </option>
+      } }
+    </select>
+    @if (formSubmitted && editFilterForm.get("category")?.hasError('required')){
+    <p>Please select a category</p>
+    }
+    <button type="button" (click)="closeModal()">Cancel</button>
+    <button type="submit">Submit</button>
+  </form>
+</app-modal>

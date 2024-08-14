@@ -100,10 +100,14 @@ public class AuthenticationController : BaseApiController
         return encrypterToken;
     }
 
-    [Authorize]
     [HttpGet("logout")]
     public void Logout()
     {
-        HttpContext.Response.Cookies.Delete("jwtToken");
+        if (Request.Cookies["jwtToken"] != null)
+        {
+            HttpContext.Response.Cookies.Delete("jwtToken");
+        }
+
+        return;
     }
 }
