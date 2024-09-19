@@ -34,7 +34,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(
     }
 ).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
-// ! {WJT} Add this to configure JWT settings when the app is being built
+// ! {JWT} Add this to configure JWT settings when the app is being built
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -67,7 +67,7 @@ builder.Services.AddAuthentication(options =>
 // ! Add CORS
 builder.Services.AddCors();
 
-// ! {WJT}
+// ! {JWT}
 builder.Services.AddAuthorization();
 
 var app = builder.Build();

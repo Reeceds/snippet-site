@@ -32,6 +32,23 @@ export class FiltersService {
     );
   }
 
+  // createFilterList(filtersArr: Filter[]): Observable<Filter[]> {
+  //   const httpOptions = {
+  //     headers: new HttpHeaders({
+  //       'Content-Type': 'application/json',
+  //       responseType: 'text/plain',
+  //     }),
+  //   };
+
+  //   const filterData = JSON.stringify(filtersArr);
+
+  //   return this.http.post<Filter[]>(
+  //     `${this.url}filters/create/list`,
+  //     filterData,
+  //     httpOptions
+  //   );
+  // }
+
   editFilter(editedFIlter: Filter) {
     const httpOptions = {
       headers: new HttpHeaders({

@@ -1,0 +1,47 @@
+<div>
+  <div class="container">
+    <h1>Snippets</h1>
+    <button type="button" routerLink="/snippets/create">Create</button>
+  </div>
+</div>
+<div class="container">
+  <p>snippets-page works!</p>
+  <div class="d-flex flex-wrap">
+    @if (snippets.length > 0 && !getAllSnippetsError) { @for (snippet of
+    snippets; track snippet.id) {
+    <div class="card mb-5 me-3 p-4 col-12 col-sm-6 col-md-4 col-lg-3">
+      <p>{{ snippet.title }}</p>
+      <p>{{ snippet.content }}</p>
+      <!-- <p>{{ snippet.creator }}</p> -->
+      <!-- <p>{{ snippet.dateCreated | date : "dd-MM-yyyy" }}</p> -->
+      <div class="dropdown">
+        <div data-bs-toggle="dropdown" style="cursor: pointer">
+          <fa-icon class="fa-sm me-3" [icon]="faEllipsis"></fa-icon>
+        </div>
+        <ul class="dropdown-menu">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/snippets/edit/{{ snippet.id }}"
+              >Edit</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" (click)="deleteSnippet(snippet.id!)"
+              >Remove</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+    } } @else if (snippets.length === 0 && !getAllSnippetsError) {
+    <div>
+      <p>No snippets created.</p>
+    </div>
+    } @else if (getAllSnippetsError) {
+    <div>
+      <p>Snippet data currently unavailable.</p>
+    </div>
+    }
+  </div>
+</div>

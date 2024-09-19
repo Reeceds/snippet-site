@@ -4,7 +4,10 @@
 <ul>
   @for (filter of filtersList; track filter.id ) {
   <li [attr.filter-id]="filter.id">
-    <span class="me-3">{{ filter.filterName }}</span>
+    <span class="me-3"
+      >{{ filter.filterName }} -
+      <small>({{ filter.categoryName }})</small></span
+    >
     <fa-icon
       class="fa-sm me-3"
       [icon]="faPen"
@@ -28,6 +31,7 @@
 </div>
 }
 
+<!-- CREATE MODAL -->
 <app-modal *ngIf="isCreateModalOpen" (closeModal)="closeModal()">
   <form [formGroup]="createFilterForm" (ngSubmit)="createFilterSubmit()">
     <h5>Add filter</h5>
@@ -62,6 +66,7 @@
   </form>
 </app-modal>
 
+<!-- EDIT MODAL -->
 <app-modal *ngIf="isEditModalOpen" (closeModal)="closeModal()">
   <form [formGroup]="editFilterForm" (ngSubmit)="editFilterSubmit()">
     <h5>Edit filter</h5>
@@ -74,6 +79,8 @@
     @if (formSubmitted &&
     editFilterForm.get("filterName")?.hasError('required')){
     <p>Please enter a filter name</p>
+    } @else if (formSubmitted && duplicateFilterError) {
+    <p>A filter with this name already exists</p>
     }
     <label for="category">Category</label>
     <select formControlName="categoryId" id="category" required>

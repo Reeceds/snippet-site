@@ -96,6 +96,7 @@ export class ProfileCategoriesComponent implements OnInit {
   }
 
   openCreateModal() {
+    console.log(this.categoriesList);
     this.isCreateModalOpen = true;
 
     this.createFilterForm.patchValue({
@@ -143,7 +144,7 @@ export class ProfileCategoriesComponent implements OnInit {
 
     this.newFilter = {
       filterName: this.createFilterForm.value.filterName!,
-      categoryId: +this.createFilterForm.value.categoryId!, // '+' converts string to a number, can also use Number(this.createFilterForm.value.category!)
+      categoryId: +this.createFilterForm.value.categoryId!, // ? '+' converts string to a number, can also use Number(this.createFilterForm.value.category!)
     };
 
     this.filterService
@@ -172,6 +173,7 @@ export class ProfileCategoriesComponent implements OnInit {
       filterName: this.editFilterForm.value.filterName!,
       categoryId: +this.editFilterForm.value.categoryId!,
     };
+    console.log(this.editedFilter);
 
     this.filterService
       .editFilter(this.editedFilter)
@@ -184,6 +186,7 @@ export class ProfileCategoriesComponent implements OnInit {
         },
         error: (err) => {
           console.log('Error editing filter: ', err);
+          if (err.error === 'Duplicate') this.duplicateFilterError = true;
         },
       });
   }
