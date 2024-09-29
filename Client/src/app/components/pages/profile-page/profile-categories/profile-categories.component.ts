@@ -144,7 +144,7 @@ export class ProfileCategoriesComponent implements OnInit {
 
     this.newFilter = {
       filterName: this.createFilterForm.value.filterName!,
-      categoryId: +this.createFilterForm.value.categoryId!, // ? '+' converts string to a number, can also use Number(this.createFilterForm.value.category!)
+      categoryId: +this.createFilterForm.value.categoryId!, // '+' converts string to a number, can also use Number(this.createFilterForm.value.category!)
     };
 
     this.filterService

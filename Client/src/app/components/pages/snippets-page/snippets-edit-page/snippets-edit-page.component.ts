@@ -82,6 +82,7 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
   createSnippetForm = this.fb.group({
     snippetTitle: new FormControl('', [Validators.required]),
     snippetBody: new FormControl('', [Validators.required]),
+    snippetNotes: new FormControl(''),
   });
 
   createFilterForm = this.fb.group({
@@ -113,6 +114,7 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
           this.createSnippetForm.patchValue({
             snippetTitle: res.title,
             snippetBody: res.content,
+            snippetNotes: res.notes,
           });
         },
         error: (err) => {
@@ -289,6 +291,7 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
       id: this.selectedSnippet?.id,
       title: this.createSnippetForm.value.snippetTitle!,
       content: this.createSnippetForm.value.snippetBody!,
+      notes: this.createSnippetForm.value.snippetNotes!,
       filters: this.selectedFiltersArr,
       newFilters: this.newFiltersList,
       dateCreated: this.selectedSnippet?.dateCreated,
@@ -300,7 +303,7 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
     if (this.newFiltersList.length > 0) {
       this._snippetService.createSnippetFilters(newSnippet).subscribe({
         next: (res) => {
-          // ? Array.isArray() checks if param is an array
+          // Array.isArray() checks if param is an array
           if (Array.isArray(res)) {
             res.forEach((el) => {
               this.selectedFiltersArr.push({

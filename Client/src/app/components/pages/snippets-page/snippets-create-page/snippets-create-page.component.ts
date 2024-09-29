@@ -66,6 +66,7 @@ export class SnippetsCreatePageComponent implements OnInit {
   createSnippetForm = this.fb.group({
     snippetTitle: new FormControl('', [Validators.required]),
     snippetBody: new FormControl('', [Validators.required]),
+    snippetNotes: new FormControl(''),
   });
 
   createFilterForm = this.fb.group({
@@ -245,6 +246,7 @@ export class SnippetsCreatePageComponent implements OnInit {
 
     const newSnippet: Snippet = {
       title: this.createSnippetForm.value.snippetTitle!,
+      notes: this.createSnippetForm.value.snippetNotes!,
       content: this.createSnippetForm.value.snippetBody!,
       filters: this.selectedFiltersArr,
       newFilters: this.newFiltersList,
@@ -257,7 +259,7 @@ export class SnippetsCreatePageComponent implements OnInit {
         ?.pipe(takeUntilDestroyed(this.destroyRef))
         ?.subscribe({
           next: (res) => {
-            // ? Array.isArray() checks if param is an array
+            // Array.isArray() checks if param is an array
             if (Array.isArray(res)) {
               res.forEach((el) => {
                 this.selectedFiltersArr.push({

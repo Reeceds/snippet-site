@@ -19,14 +19,66 @@ public class SnippetsController : BaseApiController
         this._context = context;
         this._userManager = userManager;
     }
+
     [HttpGet]
-    public async Task<IActionResult> GetListSnippets()
+    public async Task<IActionResult> GetListSnippets([FromQuery]string? filters, [FromQuery]string? search) // Use '?' to specify that the query may be empty and not cause an eror
     {
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (userId == null) return NotFound();
 
-        var snippets = await _context.Snippets.Where(u => u.AppUserId == userId).Include(f => f.SnippetFilters).ToListAsync();
+        List<Snippet> snippets = new List<Snippet>();
+
+        string searchString = "";
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            searchString = search.Trim();
+        }
+
+        // If no filters or serach, return all
+        if (string.IsNullOrEmpty(filters) && string.IsNullOrEmpty(searchString))
+        {
+            snippets = await _context.Snippets.Where(u => u.AppUserId == userId).Include(f => f.SnippetFilters).ToListAsync();
+        }
+        
+        // If only filters requested, send matched list
+        if (!string.IsNullOrEmpty(filters) && string.IsNullOrEmpty(searchString))
+        {
+            var filtersArr = filters.ToLower().Split(",");
+            
+            snippets = await (
+                from s in _context.Snippets
+                join sf in _context.SnippetFilters on s.Id equals sf.SnippetId
+                where s.AppUserId == userId && filtersArr.Contains(sf.FilterName.ToLower())
+                select s
+            ).Distinct().Include(f => f.SnippetFilters).ToListAsync();
+
+            if (snippets.Count == 0) return Ok("No snippets found: Filter results only");
+        }
+        
+        // If only a search requested, send matched list
+        if (!string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(filters))
+        {
+            snippets = await _context.Snippets.Where(i => i.Title.ToLower().Contains(searchString.ToLower())).Include(f => f.SnippetFilters).ToListAsync();
+
+            if (snippets.Count == 0) return Ok("No snippets found: Search results only");
+        }
+
+        // If both filters and search requested, send matched list
+        if (!string.IsNullOrEmpty(filters) && !string.IsNullOrEmpty(searchString))
+        {
+            var filtersArr = filters.Split(",");
+            
+            snippets = await (
+                from s in _context.Snippets
+                join sf in _context.SnippetFilters on s.Id equals sf.SnippetId
+                where s.AppUserId == userId && filtersArr.Contains(sf.FilterName) && s.Title.ToLower().Contains(searchString.ToLower())
+                select s
+            ).Distinct().Include(f => f.SnippetFilters).ToListAsync();
+
+            if (snippets.Count == 0) return Ok("No snippets found: Filters & search results");
+        }
         
         return Ok(snippets);
     }
@@ -56,8 +108,10 @@ public class SnippetsController : BaseApiController
         {
             Title = snippetDto.Title,
             Content = snippetDto.Content,
+            Notes = snippetDto.Notes,
             Creator = displayName,
             DateCreated = DateTime.UtcNow,
+            LastUpdated = DateTime.UtcNow,
             AppUserId = userId
         };
         
@@ -141,6 +195,7 @@ public class SnippetsController : BaseApiController
             Id = snippetDto.Id,
             Title = snippetDto.Title,
             Content = snippetDto.Content,
+            Notes = snippetDto.Notes,
             Creator = displayName,
             DateCreated = snippetDto.DateCreated,
             LastUpdated = DateTime.UtcNow,
@@ -150,7 +205,6 @@ public class SnippetsController : BaseApiController
         var existingSnipFilt = this._context.SnippetFilters.Where(x => x.SnippetId == snippetDto.Id).ToList();
         
         updateSnippet.SnippetFilters = new List<SnippetFilter>();
-
 
         // Add a filter to the snippet if it was not previously checked
         foreach (var newFilter in snippetDto.Filters)

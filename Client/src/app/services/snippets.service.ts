@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Snippet } from '../models/snippet';
 import { Router } from '@angular/router';
@@ -12,8 +12,15 @@ export class SnippetsService {
 
   constructor(private http: HttpClient) {}
 
-  getSnippetsList(): Observable<Snippet[]> | undefined {
-    return this.http.get<Snippet[]>(`${this.url}snippets`);
+  getSnippetsList(
+    filters: string,
+    searchTerm: string
+  ): Observable<Snippet[]> | undefined {
+    let params = new HttpParams()
+      .set('filters', filters)
+      .set('search', searchTerm);
+
+    return this.http.get<Snippet[]>(`${this.url}snippets`, { params });
   }
 
   getSnippet(id: number): Observable<Snippet> {
