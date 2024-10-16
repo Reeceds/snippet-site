@@ -1,0 +1,66 @@
+<div>
+  <div class="container">
+    <h1>Edit Documents</h1>
+  </div>
+</div>
+<div class="container">
+  <form
+    class="d-flex flex-column"
+    [formGroup]="editDocumentForm"
+    (ngSubmit)="editDocumentSubmit()"
+  >
+    <label for="title">Title</label>
+    <input
+      id="title"
+      type="text"
+      formControlName="documentTitle"
+      placeholder="Enter document title here..."
+      maxlength="80"
+      [(ngModel)]="editDocumentForm.value.documentTitle"
+    />
+    <small
+      >Character limit:
+      {{ 80 - editDocumentForm.value.documentTitle?.length! }} / 80</small
+    >
+    @if (formSubmitted &&
+    editDocumentForm.get('documentTitle')?.hasError('required')) {
+    <small>Please enter a title</small>
+    } @else if (formSubmitted && editDocumentForm.value.documentTitle?.trim()
+    === '') {
+    <small>Please enter a valid title</small>
+    }
+    <label for="content">Content</label>
+    <editor
+      apiKey="{{ tinyMceApiKey }}"
+      id="content"
+      formControlName="content"
+      [init]="{
+      height: 1000,
+      menubar: false,
+      codesample_global_prismjs: true,
+      codesample_languages: [
+        { text: 'HTML/XML', value: 'markup' },
+        { text: 'JavaScript', value: 'javascript' },
+        { text: 'CSS', value: 'css' },
+        { text: 'PHP', value: 'php' },
+        { text: 'Ruby', value: 'ruby' },
+        { text: 'Python', value: 'python' },
+        { text: 'Java', value: 'java' },
+        { text: 'C', value: 'c' },
+        { text: 'C#', value: 'csharp' },
+        { text: 'C++', value: 'cpp' }
+      ],
+      plugins: [
+        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+        'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+      ],
+      toolbar1: 'export | undo redo | blocks | bold italic underline strikethrough | removeformat',
+      toolbar2: 'checklist numlist bullist indent table | link | spellcheckdialog | emoticons charmap | code codesample',
+    }"
+    ></editor>
+    <button type="button" routerLink="/docs/folders/{{ folderId }}/documents">
+      Cancel
+    </button>
+    <button type="submit">Submit</button>
+  </form>
+</div>

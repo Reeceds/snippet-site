@@ -1,0 +1,129 @@
+<div>
+  <div class="container">
+    <h1>Documents</h1>
+    <button type="button" (click)="openCreateModal()">
+      New folder <fa-icon class="fa-sm me-3" [icon]="faPlus"></fa-icon>
+    </button>
+  </div>
+</div>
+<div class="container">
+  <p>Folders</p>
+
+  <!-- FOLDERS LIST -->
+  <table style="width: 100%">
+    <tr>
+      <th>Folder</th>
+      <th>Owner</th>
+      <th>Last modified</th>
+      <th></th>
+    </tr>
+    @if (foldersList?.length! > 0) { @for (folder of foldersList; track $index)
+    {
+    <tr style="border: 1px solid gray">
+      <td routerLink="/docs/folders/{{ folder.id }}/documents">
+        {{ folder.folderName }}
+      </td>
+      <td>{{ folder.creator }}</td>
+      <td>{{ folder.lastUpdated | date : "dd-MM-yyyy" }}</td>
+      <td style="text-align: right">
+        <div class="dropdown">
+          <div data-bs-toggle="dropdown" style="cursor: pointer">
+            <fa-icon class="fa-sm me-3" [icon]="faEllipsis"></fa-icon>
+          </div>
+          <ul class="dropdown-menu">
+            <li>
+              <a
+                class="dropdown-item"
+                (click)="openEditModal(folder.id!, folder.folderName!)"
+                >Edit</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="openDeleteModal(folder.id!)"
+                >Remove</a
+              >
+            </li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+    } } @else if (!foldersListError && foldersList?.length === 0) {
+    <tr>
+      <td>No folders created.</td>
+    </tr>
+    } @else if (foldersListError) {
+    <tr>
+      <td>Folders data currently unavailable.</td>
+    </tr>
+    }
+  </table>
+</div>
+
+<!-- CREATE MODAL -->
+<app-modal *ngIf="isCreateModalOpen" (closeModal)="closeModal()">
+  <h5>Create new folder</h5>
+  <form
+    class="d-flex flex-column"
+    [formGroup]="createFolderForm"
+    (ngSubmit)="createFolderSubmit()"
+  >
+    <input
+      type="text"
+      formControlName="folderName"
+      placeholder="Enter folder name here..."
+      required
+      maxlength="20"
+      [(ngModel)]="newTitle"
+    />
+    <small>Character limit: {{ 20 - newTitle?.length! }} / 20</small>
+    @if (isFolderTitleEmpty && !newTitle) {
+    <small>Please enter a title</small>
+    } @else if (!isFolderTitleEmpty && createFolderError) {
+    <small>Error creating folder</small>
+    }
+    <div>
+      <button type="button" (click)="closeModal()">Cancel</button>
+      <button type="submit">Create</button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- EDIT MODAL -->
+<app-modal *ngIf="isEditModalOpen" (closeModal)="closeModal()">
+  <h5>Rename folder</h5>
+  <form
+    class="d-flex flex-column"
+    [formGroup]="editFolderForm"
+    (ngSubmit)="editFolderSubmit()"
+  >
+    <input
+      type="text"
+      formControlName="folderName"
+      placeholder="Enter folder name here..."
+      required
+      maxlength="20"
+      [(ngModel)]="editFolderForm.value.folderName"
+    />
+    <small
+      >Character limit: {{ 20 - editFolderForm.value.folderName?.length! }} /
+      20</small
+    >
+    @if (isFolderTitleEmpty && !editFolderForm.value.folderName) {
+    <small>Please enter a title</small>
+    } @else if (!isFolderTitleEmpty && editFolderError) {
+    <small>Error creating folder</small>
+    }
+    <div>
+      <button type="button" (click)="closeModal()">Cancel</button>
+      <button type="submit">Ok</button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- DELETE MODAL -->
+<app-modal *ngIf="isDeleteModalOpen" (closeModal)="closeModal()">
+  <h5>Delete folder</h5>
+  <p>Are you sure you want to delete this folder and all related documents?</p>
+  <button type="button" (click)="closeModal()">No</button>
+  <button type="button" (click)="deleteFolder(folderToDeleteId!)">Yes</button>
+</app-modal>

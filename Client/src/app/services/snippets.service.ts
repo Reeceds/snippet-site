@@ -14,13 +14,15 @@ export class SnippetsService {
 
   getSnippetsList(
     filters: string,
-    searchTerm: string
-  ): Observable<Snippet[]> | undefined {
+    searchTerm: string,
+    pageSize: number
+  ): Observable<any> | undefined {
     let params = new HttpParams()
       .set('filters', filters)
-      .set('search', searchTerm);
+      .set('search', searchTerm)
+      .set('pageSize', pageSize);
 
-    return this.http.get<Snippet[]>(`${this.url}snippets`, { params });
+    return this.http.get<any>(`${this.url}snippets`, { params });
   }
 
   getSnippet(id: number): Observable<Snippet> {

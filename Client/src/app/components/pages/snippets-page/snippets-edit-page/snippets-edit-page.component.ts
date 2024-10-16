@@ -18,6 +18,7 @@ import { ModalComponent } from '../../../modal/modal.component';
 import { SnippetsService } from '../../../../services/snippets.service';
 import { Snippet } from '../../../../models/snippet';
 import { Router, RouterLink } from '@angular/router';
+import { EditorModule } from '@tinymce/tinymce-angular';
 
 @Component({
   selector: 'app-snippets-edit-page',
@@ -28,6 +29,7 @@ import { Router, RouterLink } from '@angular/router';
     ModalComponent,
     ReactiveFormsModule,
     RouterLink,
+    EditorModule,
   ],
   templateUrl: './snippets-edit-page.component.html',
   styleUrl: './snippets-edit-page.component.scss',
@@ -55,6 +57,7 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
 
   destroyRef = inject(DestroyRef);
   fb = inject(NonNullableFormBuilder);
+  tinyMceApiKey: string = '90qudyul1l4rco954qm4d426bevwnpgn5tjdooz6vdn7txvw';
 
   constructor(
     private _snippetService: SnippetsService,
@@ -65,8 +68,7 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
   ) {}
 
   ngOnInit(): void {
-    this.paramId = this.route.snapshot.params['id'];
-    this.getSnippet(this.paramId!);
+    this.getSnippet();
     this.getFilterList();
     this.getCategoriesList();
   }
@@ -96,9 +98,11 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
     categoryName: new FormControl('', [Validators.required]),
   });
 
-  getSnippet(id: number) {
+  getSnippet() {
+    const paramId = this.route.snapshot.params['id'];
+
     this._snippetService
-      .getSnippet(id)
+      .getSnippet(paramId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
@@ -280,12 +284,7 @@ export class SnippetsEditPageComponent implements OnInit, DoCheck {
   submitSnippet() {
     this.formSubmitted = true;
 
-    if (
-      this.createSnippetForm.invalid ||
-      (this.selectedFiltersArr.length === 0 && this.newFiltersList.length === 0)
-    ) {
-      return;
-    }
+    if (this.createSnippetForm.invalid) return;
 
     const newSnippet: Snippet = {
       id: this.selectedSnippet?.id,

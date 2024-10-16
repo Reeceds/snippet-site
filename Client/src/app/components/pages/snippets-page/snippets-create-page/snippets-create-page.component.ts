@@ -17,6 +17,7 @@ import { ModalComponent } from '../../../modal/modal.component';
 import { SnippetsService } from '../../../../services/snippets.service';
 import { Snippet } from '../../../../models/snippet';
 import { Router, RouterLink } from '@angular/router';
+import { EditorModule } from '@tinymce/tinymce-angular';
 
 @Component({
   selector: 'app-snippets-create-page',
@@ -27,6 +28,7 @@ import { Router, RouterLink } from '@angular/router';
     ModalComponent,
     ReactiveFormsModule,
     RouterLink,
+    EditorModule,
   ],
   templateUrl: './snippets-create-page.component.html',
   styleUrl: './snippets-create-page.component.scss',
@@ -50,6 +52,7 @@ export class SnippetsCreatePageComponent implements OnInit {
 
   destroyRef = inject(DestroyRef);
   fb = inject(NonNullableFormBuilder);
+  tinyMceApiKey: string = '90qudyul1l4rco954qm4d426bevwnpgn5tjdooz6vdn7txvw';
 
   constructor(
     private _filterService: FiltersService,
@@ -237,12 +240,7 @@ export class SnippetsCreatePageComponent implements OnInit {
   submitSnippet() {
     this.formSubmitted = true;
 
-    if (
-      this.createSnippetForm.invalid ||
-      (this.selectedFiltersArr.length === 0 && this.newFiltersList.length === 0)
-    ) {
-      return;
-    }
+    if (this.createSnippetForm.invalid) return;
 
     const newSnippet: Snippet = {
       title: this.createSnippetForm.value.snippetTitle!,

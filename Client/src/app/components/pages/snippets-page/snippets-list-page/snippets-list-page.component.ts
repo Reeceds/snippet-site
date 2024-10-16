@@ -1,4 +1,5 @@
 import {
+  AfterViewChecked,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
@@ -23,6 +24,9 @@ import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from '@angular/forms';
+import 'prismjs';
+
+declare const Prism: any;
 
 @Component({
   selector: 'app-snippets-list-page',
@@ -38,7 +42,7 @@ import {
   styleUrl: './snippets-list-page.component.scss',
   // changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SnippetsListPageComponent implements OnInit {
+export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
   faEllipsis = faEllipsis;
   destroyRef = inject(DestroyRef);
   snippetsList: Snippet[] = [];
@@ -58,6 +62,11 @@ export class SnippetsListPageComponent implements OnInit {
   isViewModalOpen: boolean = false;
   isDeleteModalOpen: boolean = false;
 
+  pageSize: number = 3;
+  loadMoreSize: number = 3;
+  resultsCount: number | undefined;
+  hasMoreItems: boolean = true;
+
   fb = inject(NonNullableFormBuilder);
 
   constructor(
@@ -72,6 +81,10 @@ export class SnippetsListPageComponent implements OnInit {
     this.getSnippetList();
     this.getCategories();
     this.getFilters();
+  }
+
+  ngAfterViewChecked(): void {
+    Prism.highlightAll();
   }
 
   searchForm = this.fb.group({
@@ -98,12 +111,15 @@ export class SnippetsListPageComponent implements OnInit {
     this._snippetService
       .getSnippetsList(
         this.filtersQueryString!,
-        this.searchForm.value.searchTerm!
+        this.searchForm.value.searchTerm!,
+        this.pageSize
       )
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       ?.subscribe({
         next: (res) => {
-          this.snippetsList = res;
+          this.snippetsList = res.items;
+          this.resultsCount = res.resultsCount;
+          this.hasMoreItems = res.hasMoreItems;
         },
         error: (err) => {
           if (err.error.text === 'No snippets found.') {
@@ -166,6 +182,11 @@ export class SnippetsListPageComponent implements OnInit {
       },
     });
     this.closeModal();
+  }
+
+  loadMoreSnippets() {
+    this.pageSize += this.loadMoreSize;
+    this.getSnippetList();
   }
 
   openViewModal(id: number) {

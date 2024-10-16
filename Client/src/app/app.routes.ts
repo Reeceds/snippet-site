@@ -2,11 +2,15 @@ import { Routes } from '@angular/router';
 import { LandingPageComponent } from './components/pages/landing-page/landing-page.component';
 import { SnippetsListPageComponent } from './components/pages/snippets-page/snippets-list-page/snippets-list-page.component';
 import { ProfilePageComponent } from './components/pages/profile-page/profile-page.component';
-import { DocsPageComponent } from './components/pages/docs-page/docs-page.component';
+import { DocsFoldersListPageComponent } from './components/pages/docs-page/docs-folders-list-page/docs-folders-list-page.component';
 import { ProfileAccountComponent } from './components/pages/profile-page/profile-account/profile-account.component';
 import { ProfileCategoriesComponent } from './components/pages/profile-page/profile-categories/profile-categories.component';
 import { SnippetsCreatePageComponent } from './components/pages/snippets-page/snippets-create-page/snippets-create-page.component';
 import { SnippetsEditPageComponent } from './components/pages/snippets-page/snippets-edit-page/snippets-edit-page.component';
+import { DocsDocumentsListPageComponent } from './components/pages/docs-page/docs-documents-list-page/docs-documents-list-page.component';
+import { DocsDocumentCreatePageComponent } from './components/pages/docs-page/docs-document-create-page/docs-document-create-page.component';
+import { DocsDocumentViewPageComponent } from './components/pages/docs-page/docs-document-view-page/docs-document-view-page.component';
+import { DocsDocumentEditPageComponent } from './components/pages/docs-page/docs-document-edit-page/docs-document-edit-page.component';
 
 export const routes: Routes = [
   {
@@ -47,6 +51,35 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: 'docs', component: DocsPageComponent, title: 'Documents Page' },
+  {
+    path: 'docs/folders',
+    component: DocsFoldersListPageComponent,
+    title: 'Documents Folders Page',
+  },
+  {
+    path: 'docs/folders/:folderId/documents',
+    component: DocsDocumentsListPageComponent,
+    title: 'Documents Page',
+  },
+  {
+    path: 'docs/folders/:folderId/document/create',
+    component: DocsDocumentCreatePageComponent,
+    title: 'Document Create Page',
+  },
+  {
+    path: 'docs/folders/:folderId/document/edit/:docId',
+    component: DocsDocumentEditPageComponent,
+    title: 'Document Edit Page',
+  },
+  {
+    path: 'docs/folders/:folderId/document/:docId',
+    component: DocsDocumentViewPageComponent,
+    title: 'Document View Page',
+  },
+  // {
+  //   path: 'docs/folders/documents',
+  //   redirectTo: '/docs/folders',
+  //   pathMatch: 'full',
+  // },
   { path: '**', redirectTo: '/snippets', pathMatch: 'full' },
 ];

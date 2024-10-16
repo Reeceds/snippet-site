@@ -44,7 +44,7 @@ public class FiltersController : BaseApiController
 
         var newFilter = new Filter
         {
-            FilterName = filterDto.FilterName,
+            FilterName = filterDto.FilterName.Trim(),
             CategoryId = filterDto.CategoryId,
             CategoryName = categoryName?.CategoryName,
             AppUserId = userId
@@ -73,19 +73,19 @@ public class FiltersController : BaseApiController
         var updateFilter = new Filter
         {
             Id = filterDto.Id,
-            FilterName = filterDto.FilterName,
+            FilterName = filterDto.FilterName.Trim(),
             CategoryId = filterDto.CategoryId,
             CategoryName = categoryName?.CategoryName,
             AppUserId = userId
         };
 
-        var mathchedSnippetFilters = this._context.SnippetFilters.Where(x => x.FilterId == filterDto.Id).ToList();
+        var mathchedSnippetFilters = this._context.SnippetFilters.Where(x => x.FilterId == filterDto.Id && x.AppUserId == userId).ToList();
 
         foreach (var item in mathchedSnippetFilters)
         {
             this._context.SnippetFilters.Attach(item);
 
-            item.FilterName = filterDto.FilterName;
+            item.FilterName = filterDto.FilterName.Trim();
 
             this._context.Entry(item).Property(e => e.FilterName).IsModified = true;
         }

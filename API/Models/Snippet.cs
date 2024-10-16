@@ -12,7 +12,7 @@ public class Snippet
     public string Creator { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime LastUpdated { get; set; }
-    public List<SnippetFilter> SnippetFilters { get; set; }
+    public List<SnippetFilter>? SnippetFilters { get; set; }
     public string AppUserId { get; set; }
 
 }

@@ -30,16 +30,19 @@ import { Category } from '../../../../models/category';
 export class ProfileCategoriesComponent implements OnInit {
   faPen = faPen;
   faTrash = faTrashCan;
+
   isCreateModalOpen: boolean = false;
   isEditModalOpen: boolean = false;
+  isDeleteModalOpen: boolean = false;
 
   categoriesList: Category[] = [];
-
-  getFiltersError: boolean = false;
   filtersList: Filter[] = [];
   newFilter: Filter = {};
   editedFilter: Filter = {};
+  filterToDeleteId: number | undefined;
+
   formSubmitted: boolean = false;
+  getFiltersError: boolean = false;
   duplicateFilterError: boolean = false;
 
   fb = inject(NonNullableFormBuilder);
@@ -119,9 +122,15 @@ export class ProfileCategoriesComponent implements OnInit {
     });
   }
 
+  openDeleteModal(id: number) {
+    this.isDeleteModalOpen = true;
+    this.filterToDeleteId = id;
+  }
+
   closeModal() {
     this.isCreateModalOpen = false;
     this.isEditModalOpen = false;
+    this.isDeleteModalOpen = false;
     this.resetForm();
   }
 
@@ -196,6 +205,7 @@ export class ProfileCategoriesComponent implements OnInit {
 
     return this.filterService.deleteFitler(filterId).subscribe({
       next: () => {
+        this.closeModal();
         this.getFilterList();
       },
       error: (err) => {

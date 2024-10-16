@@ -15,10 +15,19 @@
       type="text"
       placeholder="Enter snippet title"
       formControlName="snippetTitle"
+      maxlength="80"
+      [(ngModel)]="createSnippetForm.value.snippetTitle"
     />
+    <small
+      >Character limit:
+      {{ 80 - createSnippetForm.value.snippetTitle?.length! }} / 80</small
+    >
     @if (formSubmitted &&
     createSnippetForm.get('snippetTitle')?.hasError('required')) {
-    <p>Please enter a title</p>
+    <small>Please enter a title</small>
+    } @else if (formSubmitted && createSnippetForm.value.snippetTitle?.trim()
+    === "") {
+    <small>Please enter a valid title</small>
     }
 
     <label for="notes">Notes</label>
@@ -28,17 +37,42 @@
       placeholder="Enter snippet notes"
       formControlName="snippetNotes"
     ></textarea>
+
     <label for="snippetBody">Snippet</label>
-    <textarea
+    <editor
+      apiKey="{{ tinyMceApiKey }}"
       id="snippetBody"
-      type="textarea"
       formControlName="snippetBody"
-    ></textarea>
+      [init]="{
+        height: 500,
+        menubar: false,
+        codesample_global_prismjs: true,
+        codesample_languages: [
+          { text: 'HTML/XML', value: 'markup' },
+          { text: 'JavaScript', value: 'javascript' },
+          { text: 'CSS', value: 'css' },
+          { text: 'PHP', value: 'php' },
+          { text: 'Ruby', value: 'ruby' },
+          { text: 'Python', value: 'python' },
+          { text: 'Java', value: 'java' },
+          { text: 'C', value: 'c' },
+          { text: 'C#', value: 'csharp' },
+          { text: 'C++', value: 'cpp' }
+        ],
+        plugins: [
+          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+        ],
+        toolbar: 'undo redo | code codesample',
+      }"
+    ></editor>
+
     @if (formSubmitted &&
     createSnippetForm.get('snippetBody')?.hasError('required')) {
-    <p>Please enter a snippet</p>
+    <small>Please enter a snippet</small>
     }
 
+    <!-- FILTERS LIST -->
     <div class="d-flex flex-column">
       <p>Filters</p>
       @if (filtersList.length > 0 && !getFiltersError) { @for (filter of
@@ -53,18 +87,9 @@
         value="{{ filter.id }}"
         (change)="onCheckboxChange($event)"
       />
-      } } @else if (filtersList.length === 0 && !getFiltersError) {
+      } } @else if (getFiltersError) {
       <div>
-        <p>No filters created.</p>
-      </div>
-      } @else if (getFiltersError) {
-      <div>
-        <p>Filter data currently unavailable.</p>
-      </div>
-      } @if (formSubmitted && (this.selectedFiltersArr.length === 0 &&
-      this.newFiltersList.length === 0)) {
-      <div>
-        <p>Either select or create a new filter</p>
+        <small>Filter data currently unavailable.</small>
       </div>
       }
     </div>
@@ -112,9 +137,9 @@
     />
     @if (filterFormSubmitted &&
     createFilterForm.get("filterName")?.hasError('required')){
-    <p>Please enter a filter name</p>
+    <small>Please enter a filter name</small>
     } @else if (filterFormSubmitted && duplicateFilterError) {
-    <p>A filter with this name already exists</p>
+    <small>A filter with this name already exists</small>
     }
 
     <label for="category">Category</label>
@@ -129,7 +154,7 @@
     </select>
     @if (filterFormSubmitted && createFilterForm.controls.categoryName.value ===
     "default"){
-    <p>Please select a category</p>
+    <small>Please select a category</small>
     }
     <button type="button" (click)="closeModal()">Cancel</button>
     <button type="submit">Submit</button>
@@ -148,9 +173,9 @@
     />
     @if (filterFormSubmitted &&
     editFilterForm.get("filterName")?.hasError('required')){
-    <p>Please enter a filter name</p>
+    <small>Please enter a filter name</small>
     } @else if (filterFormSubmitted && duplicateFilterError) {
-    <p>A filter with this name already exists</p>
+    <small>A filter with this name already exists</small>
     }
     <label for="category">Category</label>
     <select formControlName="categoryName" id="category" required>
@@ -164,7 +189,7 @@
     </select>
     @if (filterFormSubmitted &&
     editFilterForm.get("category")?.hasError('required')){
-    <p>Please select a category</p>
+    <small>Please select a category</small>
     }
     <button type="button" (click)="closeModal()">Cancel</button>
     <button type="submit">Submit</button>

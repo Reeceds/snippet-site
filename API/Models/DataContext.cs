@@ -11,6 +11,8 @@ public class DataContext : IdentityDbContext<AppUser>
     public DbSet<Category> Categories { get; set; }
     public DbSet<Filter> Filters { get; set; }
     public DbSet<SnippetFilter> SnippetFilters { get; set; }
+    public DbSet<Folder> Folders { get; set; }
+    public DbSet<Doc> Docs { get; set; }
 
     public DataContext(DbContextOptions<DataContext> options) : base(options) {}
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,5 +39,11 @@ public class DataContext : IdentityDbContext<AppUser>
             .WithMany(s => s.SnippetFilters)
             .HasForeignKey(f => f.FilterId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // modelBuilder.Entity<Folder>()
+        //     .HasMany(x => x.Docs)
+        //     .WithOne( x => x.Folder)
+        //     .HasForeignKey(x => x.FolderId)
+        //     .OnDelete(DeleteBehavior.Cascade);
     }
 }

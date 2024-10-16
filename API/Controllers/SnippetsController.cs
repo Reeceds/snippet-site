@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API;
 
@@ -21,7 +22,7 @@ public class SnippetsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetListSnippets([FromQuery]string? filters, [FromQuery]string? search) // Use '?' to specify that the query may be empty and not cause an eror
+    public async Task<IActionResult> GetSnippetsList([FromQuery]string? filters, [FromQuery]string? search, [FromQuery]int pageSize) // Use '?' to specify that the query may be empty and not cause an eror
     {
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -60,7 +61,7 @@ public class SnippetsController : BaseApiController
         // If only a search requested, send matched list
         if (!string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(filters))
         {
-            snippets = await _context.Snippets.Where(i => i.Title.ToLower().Contains(searchString.ToLower())).Include(f => f.SnippetFilters).ToListAsync();
+            snippets = await _context.Snippets.Where(i => i.Title.ToLower().Contains(searchString.ToLower()) && i.AppUserId == userId).Include(f => f.SnippetFilters).ToListAsync();
 
             if (snippets.Count == 0) return Ok("No snippets found: Search results only");
         }
@@ -79,8 +80,18 @@ public class SnippetsController : BaseApiController
 
             if (snippets.Count == 0) return Ok("No snippets found: Filters & search results");
         }
+
+        bool hasMoreItems = snippets.Count > pageSize;
+        int resultsCount = snippets.Count;
         
-        return Ok(snippets);
+        snippets = snippets.Take(pageSize).ToList();
+        
+        return Ok(new 
+        { 
+            Items = snippets, 
+            HasMoreItems = hasMoreItems,
+            ResultsCount = resultsCount
+        });
     }
 
     [HttpGet("{id}")]
@@ -90,7 +101,7 @@ public class SnippetsController : BaseApiController
 
         if (userId == null) return NotFound();
 
-        var snippet = await this._context.Snippets.Include(f => f.SnippetFilters).FirstOrDefaultAsync(s => s.Id == id);
+        var snippet = await this._context.Snippets.Where(x => x.AppUserId == userId).Include(f => f.SnippetFilters).FirstOrDefaultAsync(s => s.Id == id);
 
         return Ok(snippet);
     }
@@ -106,7 +117,7 @@ public class SnippetsController : BaseApiController
 
         var newSnippet = new Snippet
         {
-            Title = snippetDto.Title,
+            Title = snippetDto.Title.Trim(),
             Content = snippetDto.Content,
             Notes = snippetDto.Notes,
             Creator = displayName,
@@ -129,10 +140,6 @@ public class SnippetsController : BaseApiController
                 });
             }
         }
-        else 
-        {
-            return BadRequest();
-        }
 
         this._context.Snippets.Add(newSnippet);
         await this._context.SaveChangesAsync();
@@ -148,7 +155,7 @@ public class SnippetsController : BaseApiController
         if (userId == null) return NotFound();
 
         // ! Check if the snippet is valid
-        if (snippetDto.Title == null || snippetDto.Title == "" || snippetDto.Content == null || snippetDto.Content == "") return BadRequest("Missing Title or Content");
+        if (snippetDto.Title.IsNullOrEmpty() || snippetDto.Content.IsNullOrEmpty()) return BadRequest("Missing Title or Content");
 
         Filter newFilter = new Filter();
         var snippetFilterList = new List<Filter>();
@@ -165,7 +172,7 @@ public class SnippetsController : BaseApiController
 
                 newFilter = new Filter()
                 {
-                    FilterName = item.FilterName,
+                    FilterName = item.FilterName.Trim(),
                     CategoryId = item.CategoryId,
                     CategoryName = categoryName?.CategoryName,
                     AppUserId = userId
@@ -193,7 +200,7 @@ public class SnippetsController : BaseApiController
         var updateSnippet = new Snippet
         {
             Id = snippetDto.Id,
-            Title = snippetDto.Title,
+            Title = snippetDto.Title.Trim(),
             Content = snippetDto.Content,
             Notes = snippetDto.Notes,
             Creator = displayName,
@@ -202,28 +209,32 @@ public class SnippetsController : BaseApiController
             AppUserId = userId
         };
 
-        var existingSnipFilt = this._context.SnippetFilters.Where(x => x.SnippetId == snippetDto.Id).ToList();
+        var existingSnipFilt = this._context.SnippetFilters.Where(x => x.SnippetId == snippetDto.Id && x.AppUserId == userId).ToList();
         
-        updateSnippet.SnippetFilters = new List<SnippetFilter>();
+        if (snippetDto.Filters.Count > 0)
+        {
+            updateSnippet.SnippetFilters = new List<SnippetFilter>();
 
-        // Add a filter to the snippet if it was not previously checked
-        foreach (var newFilter in snippetDto.Filters)
-        {          
-            bool filterExists = existingSnipFilt.Any(x => x.FilterId == newFilter.Id);      
-            
-            if (!filterExists)
-            {
-                updateSnippet.SnippetFilters.Add(new SnippetFilter
+            // Add a filter to the snippet if it was not previously selected
+            foreach (var newFilter in snippetDto.Filters)
+            {          
+                bool filterExists = existingSnipFilt.Any(x => x.FilterId == newFilter.Id);
+                
+                if (!filterExists)
                 {
-                    FilterId = newFilter.Id,
-                    FilterName = newFilter.FilterName,
-                    AppUserId = userId
-                });
+                    updateSnippet.SnippetFilters.Add(new SnippetFilter
+                    {
+                        FilterId = newFilter.Id,
+                        FilterName = newFilter.FilterName,
+                        AppUserId = userId
+                    });
+                }
             }
+            
         }
         
-        // Remove a filter if its no longer checked
-        if (snippetDto.Filters.Count > 0)
+        // Remove a filter if its no longer selected
+        if (existingSnipFilt.Count > 0)
         {
             foreach (var oldFilter in existingSnipFilt)
             {
@@ -234,10 +245,6 @@ public class SnippetsController : BaseApiController
                     this._context.Remove(this._context.SnippetFilters.FirstOrDefault(f => f.FilterId == oldFilter.FilterId));
                 }
             }
-        }
-        else 
-        {
-            return BadRequest();
         }
 
         this._context.Snippets.Update(updateSnippet);

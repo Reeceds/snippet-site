@@ -1,0 +1,23 @@
+<div>
+  <div class="container">
+    <h1>Documents</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="">
+    <fa-icon
+      class="fa-sm me-3"
+      [icon]="faCricleArrowLeft"
+      routerLink="/docs/folders/{{ folderId }}/documents"
+    ></fa-icon>
+    <p class="d-inline-flex">
+      Folders / {{ folderName }} / <b class="ms-1">{{ documentData?.title }}</b>
+    </p>
+  </div>
+
+  <div class="container">
+    <h2>{{ documentData?.title }}</h2>
+    <div [innerHTML]="documentData?.content"></div>
+  </div>
+</div>
