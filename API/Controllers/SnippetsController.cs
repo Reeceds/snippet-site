@@ -41,6 +41,8 @@ public class SnippetsController : BaseApiController
         if (string.IsNullOrEmpty(filters) && string.IsNullOrEmpty(searchString))
         {
             snippets = await _context.Snippets.Where(u => u.AppUserId == userId).Include(f => f.SnippetFilters).ToListAsync();
+
+            if (snippets.Count == 0) return Ok("No snippets found: Unfiltered results");
         }
         
         // If only filters requested, send matched list

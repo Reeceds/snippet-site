@@ -7,4 +7,5 @@ public class AppUser : IdentityUser
 {
     [MaxLength(10, ErrorMessage = "This field must be 10 characters or less")]
     public string? DisplayName { get; set; }
+    public string? RefreshToken { get; set; }
 }

@@ -23,8 +23,8 @@ export class GoogleLoginComponent implements OnInit {
   user: CurrentUser = {};
 
   constructor(
-    private socialAuthService: SocialAuthService,
-    private authService: AuthService,
+    private _socialAuthService: SocialAuthService,
+    private _authService: AuthService,
     private router: Router
   ) {}
 
@@ -33,9 +33,9 @@ export class GoogleLoginComponent implements OnInit {
   }
 
   googleLogin() {
-    this.socialAuthService.authState.subscribe({
+    this._socialAuthService.authState.subscribe({
       next: (res) => {
-        console.log(res);
+        console.log('Response from Google: ', res);
         const googleCreds: GoogleCredentials = {
           idToken: res.idToken,
           provider: res.provider,
@@ -53,18 +53,20 @@ export class GoogleLoginComponent implements OnInit {
   }
 
   handleCredentialResponse(credentials: GoogleCredentials) {
-    this.authService.googleLoginApi(credentials).subscribe({
+    this._authService.googleLoginApi(credentials).subscribe({
       next: (res) => {
-        console.log('test', res);
+        console.log('Response from backend: ', res);
         if (res.isAuthSuccessful === true) {
           this.isUserAuthenticated = true;
+
+          this._authService.setAccessToken(res.accessToken);
 
           if (res.displayName !== null) {
             this.user = {
               ...this.user,
               displayName: res.displayName,
             };
-            this.authService.setCurrentUser(this.user);
+            this._authService.setCurrentUser(this.user);
             this.router.navigate(['/snippets']);
           } else {
             this.router.navigate(['/profile/account'], {

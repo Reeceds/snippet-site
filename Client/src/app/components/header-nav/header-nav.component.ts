@@ -18,31 +18,17 @@ export class HeaderNavComponent implements OnInit {
   tablesSizePx: number = 992;
   tabletSize: boolean = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private _ngZone: NgZone
-  ) {}
+  constructor(private _authService: AuthService) {}
 
   ngOnInit(): void {
     this.TabletSizeOnPageLoad();
   }
 
   logout() {
-    this.authService.logout().subscribe({
-      next: () => {
-        this._ngZone.run(() => {
-          this.router.navigate(['/']).then(() => {
-            window.location.reload();
-          });
-        });
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+    this._authService.logout().subscribe();
   }
 
+  // Checks if the screen is tablet size on page resize (makes sure that the profile icon is removed when tablet size)
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     this.pageWidth = (event.target as Window).innerWidth;
@@ -54,6 +40,7 @@ export class HeaderNavComponent implements OnInit {
     }
   }
 
+  // Checks if the screen is tablet size on page load (makes sure that the profile icon is removed when tablet size)
   TabletSizeOnPageLoad() {
     this.pageWidth = window.innerWidth;
     this.pageWidth < this.tablesSizePx ? (this.tabletSize = true) : null;

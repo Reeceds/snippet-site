@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddCookie(x => { // ! Add for cookie authentication
-    x.Cookie.Name = "jwtToken";
+    x.Cookie.Name = "refreshToken";
 })
 .AddJwtBearer(o =>
 {
@@ -58,7 +58,7 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["jwtToken"];
+            context.Token = context.Request.Cookies["refreshToken"];
             return Task.CompletedTask;
         }
     };
