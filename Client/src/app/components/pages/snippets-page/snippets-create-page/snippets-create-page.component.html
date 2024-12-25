@@ -39,6 +39,12 @@
     ></textarea>
 
     <label for="snippetBody">Snippet</label>
+    <small
+      >For syntax highlighting, click
+      <img src="assets/images/code-sample.svg" alt="icon" width="20" />
+      below to choose a 'Language', then enter your code in the 'Code
+      view'.</small
+    >
     <editor
       apiKey="{{ tinyMceApiKey }}"
       id="snippetBody"
@@ -60,8 +66,7 @@
           { text: 'C++', value: 'cpp' }
         ],
         plugins: [
-          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+          'codesample', 'wordcount'
         ],
         toolbar: 'undo redo | code codesample',
       }"

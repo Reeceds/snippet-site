@@ -54,7 +54,7 @@ export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
   filtersQueryArr: string[] = [];
   snippetToDeleteId: number | undefined;
 
-  getAllSnippetsError: boolean = false;
+  getSnippetsError: boolean = false;
   getCategoriesError: boolean = false;
   getFiltersError: boolean = false;
   noSnippetsFound: boolean = false;
@@ -62,8 +62,8 @@ export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
   isViewModalOpen: boolean = false;
   isDeleteModalOpen: boolean = false;
 
-  pageSize: number = 3;
-  loadMoreSize: number = 3;
+  pageSize: number = 6;
+  loadMoreSize: number = 6;
   resultsCount: number | undefined;
   hasMoreItems: boolean = true;
 
@@ -78,9 +78,9 @@ export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.getSnippetList();
     this.getCategories();
     this.getFilters();
+    this.getSnippetList();
   }
 
   ngAfterViewChecked(): void {
@@ -122,11 +122,11 @@ export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
           this.hasMoreItems = res.hasMoreItems;
         },
         error: (err) => {
-          if (err.error.text === 'No snippets found.') {
+          if (err.error.text.includes('No snippets found')) {
             this.noSnippetsFound = true;
             console.log('No snippets found: ', err);
           } else {
-            this.getAllSnippetsError = true;
+            this.getSnippetsError = true;
             console.log('Failed to get snippets list: ', err);
           }
         },
@@ -246,7 +246,7 @@ export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
         queryParams: { filters: '' },
       })
       .then(() => {
-        this.getAllSnippetsError = false;
+        this.getSnippetsError = false;
         this.noSnippetsFound = false;
         this.selectedFiltersArr = [];
         this.filtersList = [];
@@ -265,7 +265,7 @@ export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
         queryParams: { filters: this.selectedFiltersArr.join() },
       })
       .then(() => {
-        this.getAllSnippetsError = false;
+        this.getSnippetsError = false;
         this.getSnippetList();
         this.getFilters();
       });
@@ -293,7 +293,7 @@ export class SnippetsListPageComponent implements OnInit, AfterViewChecked {
         this.searchForm.patchValue({
           searchTerm: '',
         });
-        this.getAllSnippetsError = false;
+        this.getSnippetsError = false;
         this.noSnippetsFound = false;
         this.getSnippetList();
         this.getFilters();

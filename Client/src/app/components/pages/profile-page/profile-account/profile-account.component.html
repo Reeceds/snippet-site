@@ -14,9 +14,6 @@
     formControlName="displayName"
     maxlength="10"
     required
-    value="{{
-      currentUser.displayName === null ? '' : currentUser.displayName
-    }}"
     [class.futureClassName]="profileForm.get('displayName')?.invalid"
   />
   @if (formSubmitted && currentDisplayName === profileForm.value.displayName){

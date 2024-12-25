@@ -16,9 +16,10 @@
 
   <!-- RESULT COUNT & FILTER TAGS -->
   <div class="mb-4">
-    <p>Results: {{ snippetsList.length }} of {{ resultsCount }}</p>
-    @if (filtersQueryArr[0] !== '') { @for (filter of filtersQueryArr; track
-    $index) {
+    @if (!noSnippetsFound && !getSnippetsError) {
+    <p>{{ snippetsList.length }} of {{ resultsCount }} results</p>
+    } @else { 0 results } @if (filtersQueryArr[0] !== '') { @for (filter of
+    filtersQueryArr; track $index) {
     <span class="me-4"
       >{{ filter }} <span (click)="removeFilter(filter)">x</span></span
     >
@@ -53,7 +54,7 @@
         <p>Filter data currently unavailable.</p>
         }
       </div>
-      } } @else if (getAllSnippetsError) {
+      } } @else if (getSnippetsError) {
       <div>
         <p>Category data currently unavailable.</p>
       </div>
@@ -67,8 +68,8 @@
     <!-- SNIPPET CARD SECTION-->
     <div class="d-flex flex-column">
       <div class="d-flex flex-wrap w-100">
-        @if (snippetsList.length > 0 && !getAllSnippetsError &&
-        !noSnippetsFound) { @for (snippet of snippetsList; track snippet.id) {
+        @if (snippetsList.length > 0 && !getSnippetsError && !noSnippetsFound) {
+        @for (snippet of snippetsList; track snippet.id) {
         <div class="card mb-5 me-3 p-4 col-12 col-sm-6 col-md-4 col-lg-3">
           <p>{{ snippet.title }}</p>
           @for (snippetFilter of snippet.snippetFilters; track $index) { @if
@@ -105,7 +106,7 @@
             </ul>
           </div>
         </div>
-        } } @else if (snippetsList.length === 0 && !getAllSnippetsError &&
+        } } @else if (snippetsList.length === 0 && !getSnippetsError &&
         !noSnippetsFound) {
         <div>
           <p>No snippets created.</p>
@@ -114,13 +115,15 @@
         <div>
           <p>No snippets found.</p>
         </div>
-        } @else if (getAllSnippetsError) {
+        } @else if (getSnippetsError) {
         <div>
           <p>Snippet data currently unavailable.</p>
         </div>
         }
       </div>
-      @if (hasMoreItems) {
+      <!-- ! look into this and ossibly remove some of the conditions apart from length > 0 -->
+      @if (hasMoreItems && !noSnippetsFound && !getSnippetsError &&
+      snippetsList.length > 0) {
       <button type="button" (click)="loadMoreSnippets()">Load more</button>
       }
     </div>

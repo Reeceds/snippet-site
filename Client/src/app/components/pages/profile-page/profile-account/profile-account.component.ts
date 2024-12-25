@@ -26,7 +26,7 @@ export class ProfileAccountComponent implements OnInit {
   fb = inject(NonNullableFormBuilder);
 
   constructor(
-    private userService: UserService,
+    private _userService: UserService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -36,16 +36,20 @@ export class ProfileAccountComponent implements OnInit {
   }
 
   profileForm = this.fb.group({
-    displayName: new FormControl(this.currentUser.displayName, [
-      Validators.required,
-    ]),
+    displayName: new FormControl('', [Validators.required]),
   });
 
   getCurrentUser() {
-    this.userService.getCurrentUser().subscribe({
+    this._userService.getCurrentUser().subscribe({
       next: (res) => {
         this.currentUser = res;
         this.currentDisplayName = res.displayName;
+
+        if (res.displayName !== null) {
+          this.profileForm.patchValue({
+            displayName: res.displayName,
+          });
+        }
       },
       error: (err) => {
         console.log('Failed to load user information: ', err);
@@ -65,7 +69,7 @@ export class ProfileAccountComponent implements OnInit {
       displayName: disName,
     };
 
-    this.userService.updateDisplayName(this.currentUser).subscribe({
+    this._userService.updateDisplayName(this.currentUser).subscribe({
       next: (res) => {
         this.route.queryParamMap.subscribe((param) => {
           if (param.get('dname') === '0') {
