@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { GoogleCredentials } from '../models/googleCredentials';
 import { CurrentUser } from '../models/currentUser';
 import { Router } from '@angular/router';
@@ -63,7 +63,7 @@ export class AuthService {
 
   // ! Revisit this to remove the double page reload
   logout() {
-    this.accessToken = null;
+    this.clearAccessToken();
 
     this._ngZone.run(() => {
       this.router.navigate(['/']).then(() => {

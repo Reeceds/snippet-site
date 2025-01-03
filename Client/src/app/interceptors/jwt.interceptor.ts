@@ -20,6 +20,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   const accessToken = _authService.getAccessToken();
   const isRefreshRequest = req.url.includes('/refresh-token');
+  const isLogout = req.url.includes('/logout');
 
   // Attach the Authorization header if the access token exists and it's not a refresh request
   let authReq = req;
@@ -58,7 +59,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
             catchError((refreshError) => {
               console.log('REFRESH TOKEN REQUEST FAILED');
               isRefreshing = false;
-              _authService.logout();
+              _authService.logout().subscribe();
 
               return throwError(() => refreshError);
             })
